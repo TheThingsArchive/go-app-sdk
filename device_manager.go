@@ -175,6 +175,17 @@ type Device struct {
 	LastSeen              time.Time `json:"last_seen"`
 }
 
+func (d *Device) addActivationConstraint(c string) {
+	constraints := strings.Split(d.ActivationConstraints, ",")
+	for _, constraint := range constraints {
+		if constraint == c {
+			return
+		}
+	}
+	constraints = append(constraints, c)
+	d.ActivationConstraints = strings.Join(constraints, ",")
+}
+
 // Update the device. This function panics if this is a new device.
 func (d *Device) Update() error {
 	if d.deviceManager == nil {
@@ -205,6 +216,7 @@ func (d *Device) Personalize(nwkSKey types.NwkSKey, appSKey types.AppSKey) error
 	if d.deviceManager == nil {
 		panic("ttn-sdk: you can not update new devices. Use the Get() function to retrieve the device from the server first.")
 	}
+	d.addActivationConstraint("abp")
 	ctx, cancel := context.WithTimeout(d.deviceManager.getContext(context.Background()), d.deviceManager.requestTimeout)
 	defer cancel()
 	res, err := d.deviceManager.devAddrClient.GetDevAddr(ctx, &lorawan.DevAddrRequest{Usage: strings.Split(d.ActivationConstraints, ",")})
