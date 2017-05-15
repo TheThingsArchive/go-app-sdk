@@ -35,9 +35,9 @@ func Example() {
 	config := ttnsdk.NewCommunityConfig(sdkClientName)
 	config.ClientVersion = "2.0.5" // The version of the application
 
-	// If you connect to a private network that does not use trusted certificates (from Let's Encrypt for example), you
-	// have to manually trust the certificates. If you use the public community network, you can just delete the next
-	// code block.
+	// If you connect to a private network that does not use trusted certificates on the Discovery Server
+	// (from Let's Encrypt for example), you have to manually trust the certificates. If you use the public community
+	// network, you can just delete the next code block.
 	if caCert := os.Getenv("TTN_CA_CERT"); caCert != "" {
 		config.TLSConfig = new(tls.Config)
 		certBytes, err := ioutil.ReadFile(caCert)
