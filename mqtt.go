@@ -303,10 +303,10 @@ func (a *applicationPubSub) Close() {
 }
 
 func (c *client) PubSub() (ApplicationPubSub, error) {
-	if err := c.mqtt.ctx.Err(); err != nil {
+	if err := c.connectMQTT(); err != nil {
 		return nil, err
 	}
-	if err := c.connectMQTT(); err != nil {
+	if err := c.mqtt.ctx.Err(); err != nil {
 		return nil, err
 	}
 	a := &applicationPubSub{
