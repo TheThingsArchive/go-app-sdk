@@ -202,17 +202,26 @@ func (d *Device) Delete() error {
 	return d.deviceManager.Delete(d.DevID)
 }
 
-// PersonalizeRandom calls Personalize with a random NwkSKey and random AppSKey. This function panics if this is a new device.
+// PersonalizeRandom personalizes a device by requesting a DevAddr from the network, and setting the NwkSKey and AppSKey
+// to randomly generated values.
 func (d *Device) PersonalizeRandom() error {
-	var nwkSKey types.NwkSKey
-	var appSKey types.AppSKey
-	random.FillBytes(nwkSKey[:])
-	random.FillBytes(appSKey[:])
-	return d.Personalize(nwkSKey, appSKey)
+	return d.PersonalizeFunc(func(_ types.DevAddr) (nwkSKey types.NwkSKey, appSKey types.AppSKey) {
+		random.FillBytes(nwkSKey[:])
+		random.FillBytes(appSKey[:])
+		return
+	})
 }
 
-// Personalize the device. This function panics if this is a new device.
+// Personalize a device by requesting a DevAddr from the network, and setting the NwkSKey and AppSKey to the given values.
 func (d *Device) Personalize(nwkSKey types.NwkSKey, appSKey types.AppSKey) error {
+	return d.PersonalizeFunc(func(_ types.DevAddr) (types.NwkSKey, types.AppSKey) {
+		return nwkSKey, appSKey
+	})
+}
+
+// PersonalizeFunc personalizes a device by requesting a DevAddr from the network, and setting the NwkSKey and AppSKey
+// to the result of the personalizeFunc
+func (d *Device) PersonalizeFunc(personalizeFunc func(types.DevAddr) (types.NwkSKey, types.AppSKey)) error {
 	if d.deviceManager == nil {
 		panic("ttn-sdk: you can not update new devices. Use the Get() function to retrieve the device from the server first.")
 	}
@@ -224,8 +233,8 @@ func (d *Device) Personalize(nwkSKey types.NwkSKey, appSKey types.AppSKey) error
 		return err
 	}
 	d.DevAddr = res.DevAddr
-	d.NwkSKey = &nwkSKey
-	d.AppSKey = &appSKey
+	nwkSKey, appSKey := personalizeFunc(*res.DevAddr)
+	d.NwkSKey, d.AppSKey = &nwkSKey, &appSKey
 	return d.Update()
 }
 
