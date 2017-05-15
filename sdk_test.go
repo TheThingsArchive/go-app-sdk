@@ -53,6 +53,10 @@ func Example() {
 	// Create a new SDK client for the application
 	client := config.NewClient(appID, appAccessKey)
 
+	// Make sure the client is closed before the function returns
+	// In your application, you should call this before the application shuts down
+	defer client.Close()
+
 	// Manage devices for the application.
 	devices, err := client.ManageDevices()
 	if err != nil {
@@ -106,7 +110,17 @@ func Example() {
 		log.WithError(err).Fatal("my-amazing-app: could not get application pub/sub")
 	}
 
-	allDevicesPubSub := pubsub.Device("my-new-device")
+	// Make sure the pubsub client is closed before the function returns
+	// In your application, you should call this before the application shuts down
+	defer pubsub.Close()
+
+	// Get a publish/subscribe client for all devices
+	allDevicesPubSub := pubsub.AllDevices()
+
+	// Make sure the pubsub client is closed before the function returns
+	// In your application, you will probably call this before the application shuts down
+	// This also stops existing subscriptions, in case you forgot to unsubscribe
+	defer allDevicesPubSub.Close()
 
 	// Subscribe to activations
 	activations, err := allDevicesPubSub.SubscribeActivations()
@@ -119,6 +133,12 @@ func Example() {
 			"devEUI":  activation.DevEUI.String(),
 			"devAddr": activation.DevAddr.String(),
 		}).Info("my-amazing-app: received activation")
+	}
+
+	// Unsubscribe from activations
+	err = allDevicesPubSub.UnsubscribeActivations()
+	if err != nil {
+		log.WithError(err).Fatal("my-amazing-app: could not unsubscribe from activations")
 	}
 
 	// Subscribe to events
@@ -137,7 +157,19 @@ func Example() {
 		}
 	}
 
+	// Unsubscribe from events
+	err = allDevicesPubSub.UnsubscribeEvents()
+	if err != nil {
+		log.WithError(err).Fatal("my-amazing-app: could not unsubscribe from events")
+	}
+
+	// Get a publish/subscribe client scoped to my-test-device
 	myNewDevicePubSub := pubsub.Device("my-new-device")
+
+	// Make sure the pubsub client for this device is closed before the function returns
+	// In your application, you will probably call this when you no longer need the device
+	// This also stops existing subscriptions, in case you forgot to unsubscribe
+	defer myNewDevicePubSub.Close()
 
 	// Subscribe to uplink messages
 	uplink, err := myNewDevicePubSub.SubscribeUplink()
@@ -147,6 +179,12 @@ func Example() {
 	for message := range uplink {
 		hexPayload := hex.EncodeToString(message.PayloadRaw)
 		log.WithField("data", hexPayload).Info("my-amazing-app: received uplink")
+	}
+
+	// Unsubscribe from uplink
+	err = myNewDevicePubSub.UnsubscribeUplink()
+	if err != nil {
+		log.WithError(err).Fatal("my-amazing-app: could not unsubscribe from uplink")
 	}
 
 	// Publish downlink message
