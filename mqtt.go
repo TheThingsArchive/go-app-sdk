@@ -132,8 +132,6 @@ func (d *devicePubSub) SubscribeUplink() (<-chan *types.UplinkMessage, error) {
 			return
 		}
 		select {
-		case <-d.ctx.Done():
-			go d.UnsubscribeUplink()
 		case d.uplink <- &msg:
 		default:
 		}
@@ -188,8 +186,6 @@ func (d *devicePubSub) SubscribeEvents() (<-chan *types.DeviceEvent, error) {
 			return
 		}
 		select {
-		case <-d.ctx.Done():
-			go d.UnsubscribeEvents()
 		case d.events <- &msg:
 		default:
 		}
@@ -235,8 +231,6 @@ func (d *devicePubSub) SubscribeActivations() (<-chan *types.Activation, error) 
 			return
 		}
 		select {
-		case <-d.ctx.Done():
-			go d.UnsubscribeActivations()
 		case d.activations <- &mqg:
 		default:
 		}
@@ -291,6 +285,12 @@ func (a *applicationPubSub) Device(devID string) DevicePubSub {
 		devID:  devID,
 	}
 	d.ctx, d.cancel = context.WithCancel(a.ctx)
+	go func() {
+		<-d.ctx.Done()
+		d.UnsubscribeUplink()
+		d.UnsubscribeEvents()
+		d.UnsubscribeActivations()
+	}()
 	return d
 }
 
