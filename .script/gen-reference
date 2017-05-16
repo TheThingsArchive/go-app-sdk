@@ -1,0 +1,11 @@
+#!/bin/sh
+
+go get github.com/robertkrimen/godocdown/godocdown
+
+cd $GOPATH/src/github.com/TheThingsNetwork/go-app-sdk
+godocdown . | sed \
+  -e 's/--//' \
+  -e 's/# ttnsdk/# API Reference/' \
+  -e 's/import /import ttnsdk /' \
+  -e 's/####/##/g' \
+  -e 's/## Usage/## Variables/' > API.md
