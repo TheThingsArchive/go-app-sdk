@@ -162,6 +162,18 @@ func (d *SparseDevice) toProto(dev *handler.Device) {
 	lorawanDevice.AppKey = d.AppKey
 }
 
+// Class represents the LoRAWAN device class
+type Class int32
+
+const (
+	// ClassA devices only allow transmission initiated by the device
+	ClassA Class = 0
+	// ClassB devices open receive windows at fixed time intervals for the purpose of enabling server initiated downlink messages
+	ClassB Class = 1
+	// ClassC devices are continuously listening when not sending for the purpose of enabling server initiated downlink messages
+	ClassC Class = 2
+)
+
 // Device in an application
 type Device struct {
 	deviceManager *deviceManager
@@ -172,6 +184,10 @@ type Device struct {
 	DisableFCntCheck      bool      `json:"disable_f_cnt_check"`
 	Uses32BitFCnt         bool      `json:"uses32_bit_f_cnt"`
 	ActivationConstraints string    `json:"activation_constraints"`
+	PreferredGateways     []string  `json:"preferred_gateways"`
+	Rx2Frequency          uint64    `json:"rx2_frequency"`
+	Rx2DataRate           string    `json:"rx2_data_rate"`
+	Class                 Class     `json:"class"`
 	LastSeen              time.Time `json:"last_seen"`
 }
 
@@ -197,7 +213,7 @@ func (d *Device) Update() error {
 // Delete the device. This function panics if this is a new device.
 func (d *Device) Delete() error {
 	if d.deviceManager == nil {
-		panic("ttn-sdk: you can not update new devices")
+		panic("ttn-sdk: you can not delete new devices")
 	}
 	return d.deviceManager.Delete(d.DevID)
 }
@@ -248,6 +264,10 @@ func (d *Device) fromProto(dev *handler.Device) {
 		d.DisableFCntCheck = lorawanDevice.DisableFCntCheck
 		d.Uses32BitFCnt = lorawanDevice.Uses32BitFCnt
 		d.ActivationConstraints = lorawanDevice.ActivationConstraints
+		d.PreferredGateways = lorawanDevice.PreferredGateways
+		d.Rx2Frequency = lorawanDevice.Rx2Frequency
+		d.Rx2DataRate = lorawanDevice.Rx2DataRate
+		d.Class = Class(lorawanDevice.Class)
 		d.LastSeen = time.Unix(0, lorawanDevice.LastSeen)
 	}
 }
@@ -260,4 +280,8 @@ func (d *Device) toProto(dev *handler.Device) {
 	lorawanDevice.DisableFCntCheck = d.DisableFCntCheck
 	lorawanDevice.Uses32BitFCnt = d.Uses32BitFCnt
 	lorawanDevice.ActivationConstraints = d.ActivationConstraints
+	lorawanDevice.PreferredGateways = d.PreferredGateways
+	lorawanDevice.Rx2Frequency = d.Rx2Frequency
+	lorawanDevice.Rx2DataRate = d.Rx2DataRate
+	lorawanDevice.Class = lorawan.Class(d.Class)
 }
