@@ -118,18 +118,19 @@ func (d *deviceManager) Delete(devID string) error {
 
 // SparseDevice contains most, but not all fields of the device. It's returned by List operations to save server resources
 type SparseDevice struct {
-	AppID       string         `json:"app_id"`
-	DevID       string         `json:"dev_id"`
-	AppEUI      types.AppEUI   `json:"app_eui"`
-	DevEUI      types.DevEUI   `json:"dev_eui"`
-	Description string         `json:"description,omitempty"`
-	DevAddr     *types.DevAddr `json:"dev_addr,omitempty"`
-	NwkSKey     *types.NwkSKey `json:"nwk_s_key,omitempty"`
-	AppSKey     *types.AppSKey `json:"app_s_key,omitempty"`
-	AppKey      *types.AppKey  `json:"app_key,omitempty"`
-	Latitude    float32        `json:"latitude,omitempty"`
-	Longitude   float32        `json:"longitude,omitempty"`
-	Altitude    int32          `json:"altitude,omitempty"`
+	AppID       string            `json:"app_id"`
+	DevID       string            `json:"dev_id"`
+	AppEUI      types.AppEUI      `json:"app_eui"`
+	DevEUI      types.DevEUI      `json:"dev_eui"`
+	Description string            `json:"description,omitempty"`
+	DevAddr     *types.DevAddr    `json:"dev_addr,omitempty"`
+	NwkSKey     *types.NwkSKey    `json:"nwk_s_key,omitempty"`
+	AppSKey     *types.AppSKey    `json:"app_s_key,omitempty"`
+	AppKey      *types.AppKey     `json:"app_key,omitempty"`
+	Latitude    float32           `json:"latitude,omitempty"`
+	Longitude   float32           `json:"longitude,omitempty"`
+	Altitude    int32             `json:"altitude,omitempty"`
+	Attributes  map[string]string `json:"attributes,omitempty"`
 }
 
 func (d *SparseDevice) fromProto(dev *handler.Device) {
@@ -151,6 +152,7 @@ func (d *SparseDevice) fromProto(dev *handler.Device) {
 	d.Latitude = dev.Latitude
 	d.Longitude = dev.Longitude
 	d.Altitude = dev.Altitude
+	d.Attributes = dev.Attributes
 }
 
 func (d *SparseDevice) toProto(dev *handler.Device) {
@@ -160,6 +162,7 @@ func (d *SparseDevice) toProto(dev *handler.Device) {
 	dev.Latitude = d.Latitude
 	dev.Longitude = d.Longitude
 	dev.Altitude = d.Altitude
+	dev.Attributes = d.Attributes
 	if dev.Device == nil {
 		dev.Device = &handler.Device_LorawanDevice{LorawanDevice: &lorawan.Device{}}
 	}
