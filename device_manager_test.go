@@ -54,10 +54,11 @@ func TestDeviceManager(t *testing.T) {
 				}},
 			},
 		}}
-		devices, err := manager.List(0, 0)
+		sparseDevices, err := manager.List(0, 0)
 		a.So(err, ShouldBeNil)
 		a.So(mock.applicationIdentifier, ShouldNotBeNil)
 		a.So(mock.applicationIdentifier.AppId, ShouldEqual, "test")
+		devices := sparseDevices.AsDevices()
 		a.So(devices, ShouldHaveLength, 1)
 		a.So(devices[0].DevID, ShouldEqual, "dev-id")
 		a.So(devices[0].AppEUI, ShouldEqual, types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8})

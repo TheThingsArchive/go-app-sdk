@@ -21,7 +21,7 @@ type DeviceManager interface {
 	// List devices in an application. Use the limit and offset for pagination. Requests that fetch many devices will be
 	// very slow, which is often not necessary. If you use this function too often, the response will be cached by the
 	// server, and you might receive outdated data.
-	List(limit, offset uint64) ([]*SparseDevice, error)
+	List(limit, offset uint64) (DeviceList, error)
 
 	// Get details for a device
 	Get(devID string) (*Device, error)
@@ -31,6 +31,18 @@ type DeviceManager interface {
 
 	// Delete a device
 	Delete(devID string) error
+}
+
+// DeviceList is a slice of *SparseDevice.
+type DeviceList []*SparseDevice
+
+// AsDevices returns the DeviceList as a slice of *Device instead of *SparseDevice
+func (d DeviceList) AsDevices() []*Device {
+	converted := make([]*Device, len(d))
+	for i, dev := range d {
+		converted[i] = dev.AsDevice()
+	}
+	return converted
 }
 
 func (c *client) ManageDevices() (DeviceManager, error) {
@@ -57,7 +69,7 @@ type deviceManager struct {
 	appID string
 }
 
-func (d *deviceManager) List(limit, offset uint64) (devices []*SparseDevice, err error) {
+func (d *deviceManager) List(limit, offset uint64) (devices DeviceList, err error) {
 	ctx, cancel := context.WithTimeout(d.getContext(context.Background()), d.requestTimeout)
 	defer cancel()
 	ctx = ttnctx.OutgoingContextWithLimitAndOffset(ctx, limit, offset)
@@ -160,6 +172,14 @@ func (d *SparseDevice) toProto(dev *handler.Device) {
 	lorawanDevice.NwkSKey = d.NwkSKey
 	lorawanDevice.AppSKey = d.AppSKey
 	lorawanDevice.AppKey = d.AppKey
+}
+
+// AsDevice wraps the *SparseDevice and returns a *Device containing that sparse device
+func (d *SparseDevice) AsDevice() *Device {
+	if d == nil {
+		return nil
+	}
+	return &Device{SparseDevice: *d}
 }
 
 // Device in an application
