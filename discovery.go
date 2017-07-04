@@ -5,7 +5,6 @@ package ttnsdk
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/TheThingsNetwork/ttn/api/discovery"
 	"google.golang.org/grpc"
@@ -29,22 +28,11 @@ func (c *client) discover() (err error) {
 	ctx, cancel := context.WithTimeout(c.getContext(context.Background()), c.RequestTimeout)
 	defer cancel()
 	c.Logger.Debug("ttn-sdk: fetching handlers")
-	handlers, err := discoveryClient.GetAll(ctx, &discovery.GetServiceRequest{ServiceName: "handler"}) // TODO: Use GetApplication RPC when implemented by discovery
+	handler, err := discoveryClient.GetByAppID(ctx, &discovery.GetByAppIDRequest{AppId: c.appID})
 	if err != nil {
-		c.Logger.WithError(err).Debug("ttn-sdk: could not fetch handlers")
+		c.Logger.WithError(err).Debug("ttn-sdk: could not find handler for application")
 		return err
 	}
-	logger = c.Logger.WithField("app-id", c.appID)
-	logger.Debug("ttn-sdk: finding handler for application")
-	for _, handler := range handlers.Services {
-		for _, handlerAppID := range handler.AppIDs() {
-			if handlerAppID == c.appID {
-				logger.WithField("handler-id", handler.Id).Debug("ttn-sdk: found handler for application")
-				c.handler.announcement = handler
-				return nil
-			}
-		}
-	}
-	logger.Debug("ttn-sdk: could not find handler for application")
-	return fmt.Errorf("ttn-sdk: application \"%s\" not registered on any handler", c.appID)
+	c.handler.announcement = handler
+	return nil
 }
