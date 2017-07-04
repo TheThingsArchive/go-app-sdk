@@ -12,25 +12,25 @@ import (
 
 func (c *client) discover() (err error) {
 	var discoveryConn *grpc.ClientConn
-	logger := c.Logger.WithField("address", c.DiscoveryServerAddress)
-	logger.Debug("ttn-sdk: connecting to discovery")
+	logger := c.Logger.WithField("Address", c.DiscoveryServerAddress)
+	logger.Debug("ttn-sdk: Connecting to discovery...")
 	if c.DiscoveryServerInsecure {
 		discoveryConn, err = c.connPool.DialInsecure(c.DiscoveryServerAddress)
 	} else {
 		discoveryConn, err = c.connPool.DialSecure(c.DiscoveryServerAddress, c.transportCredentials)
 	}
 	if err != nil {
-		logger.WithError(err).Debug("ttn-sdk: could not connect to discovery")
+		logger.WithError(err).Debug("ttn-sdk: Could not connect to discovery")
 		return err
 	}
-	logger.Debug("ttn-sdk: connected to discovery")
+	logger.Debug("ttn-sdk: Connected to discovery")
 	discoveryClient := discovery.NewDiscoveryClient(discoveryConn)
 	ctx, cancel := context.WithTimeout(c.getContext(context.Background()), c.RequestTimeout)
 	defer cancel()
-	c.Logger.Debug("ttn-sdk: fetching handlers")
+	c.Logger.Debug("ttn-sdk: Finding handler...")
 	handler, err := discoveryClient.GetByAppID(ctx, &discovery.GetByAppIDRequest{AppId: c.appID})
 	if err != nil {
-		c.Logger.WithError(err).Debug("ttn-sdk: could not find handler for application")
+		c.Logger.WithError(err).Debug("ttn-sdk: Could not find handler for application")
 		return err
 	}
 	c.handler.announcement = handler

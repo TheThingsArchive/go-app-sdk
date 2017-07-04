@@ -29,8 +29,8 @@ func (c *client) connectMQTT() (err error) {
 		}
 	}
 	if c.handler.announcement.MqttAddress == "" {
-		c.Logger.WithField("handler-id", c.handler.announcement.Id).Debug("ttn-sdk: handler does not announce mqtt address")
-		return errors.New("ttn-sdk: handler does not announce mqtt address")
+		c.Logger.WithField("HandlerID", c.handler.announcement.Id).Debug("ttn-sdk: Handler does not announce MQTT address")
+		return errors.New("ttn-sdk: Handler does not announce MQTT address")
 	}
 	mqttAddress, err := cleanMQTTAddress(c.handler.announcement.MqttAddress)
 	if err != nil {
@@ -42,13 +42,13 @@ func (c *client) connectMQTT() (err error) {
 		c.mqtt.client = mqtt.NewClient(c.Logger, c.ClientName, c.appID, c.appAccessKey, mqttAddress)
 	}
 	c.mqtt.ctx, c.mqtt.cancel = context.WithCancel(context.Background())
-	logger := c.Logger.WithField("address", mqttAddress)
-	logger.Debug("ttn-sdk: connecting to mqtt")
+	logger := c.Logger.WithField("Address", mqttAddress)
+	logger.Debug("ttn-sdk: Connecting to MQTT...")
 	if err := c.mqtt.client.Connect(); err != nil {
-		logger.WithError(err).Debug("ttn-sdk: could not connect to mqtt")
+		logger.WithError(err).Debug("ttn-sdk: Could not connect to MQTT")
 		return err
 	}
-	logger.Debug("ttn-sdk: connected to mqtt")
+	logger.Debug("ttn-sdk: Connected to MQTT")
 	return nil
 }
 
@@ -58,7 +58,7 @@ func (c *client) closeMQTT() error {
 	if c.mqtt.client == nil {
 		return nil
 	}
-	c.Logger.Debug("ttn-sdk: disconnecting from mqtt")
+	c.Logger.Debug("ttn-sdk: Disconnecting from MQTT...")
 	c.mqtt.cancel()
 	c.mqtt.client.Disconnect()
 	c.mqtt.client = nil

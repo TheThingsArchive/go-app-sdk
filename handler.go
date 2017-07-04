@@ -19,16 +19,16 @@ func (c *client) connectHandler() (err error) {
 		}
 	}
 	logger := c.Logger.WithFields(log.Fields{
-		"handler-id": c.handler.announcement.Id,
-		"address":    c.handler.announcement.NetAddress,
+		"ID":      c.handler.announcement.Id,
+		"Address": c.handler.announcement.NetAddress,
 	})
-	logger.Debug("ttn-sdk: connecting to handler")
+	logger.Debug("ttn-sdk: Connecting to handler...")
 	c.handler.conn, err = c.handler.announcement.Dial(c.connPool)
 	if err != nil {
-		logger.WithError(err).Debug("ttn-sdk: could not connect to handler")
+		logger.WithError(err).Debug("ttn-sdk: Could not connect to handler")
 		return err
 	}
-	logger.Debug("ttn-sdk: connected to handler")
+	logger.Debug("ttn-sdk: Connected to handler")
 	return nil
 }
 
