@@ -7,8 +7,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/TheThingsNetwork/api/handler"
 	"github.com/TheThingsNetwork/go-utils/log"
-	"github.com/TheThingsNetwork/ttn/api/handler"
 )
 
 // Simulator simulates messages for devices
@@ -44,8 +44,8 @@ func (s *simulator) Uplink(port uint8, payload []byte) error {
 	ctx, cancel := context.WithTimeout(s.getContext(context.Background()), s.requestTimeout)
 	defer cancel()
 	_, err := s.client.SimulateUplink(ctx, &handler.SimulatedUplinkMessage{
-		AppId:   s.appID,
-		DevId:   s.devID,
+		AppID:   s.appID,
+		DevID:   s.devID,
 		Payload: payload,
 		Port:    uint32(port),
 	})

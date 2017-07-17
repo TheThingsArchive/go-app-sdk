@@ -9,12 +9,14 @@ import (
 	"sync"
 	"time"
 
+	"github.com/TheThingsNetwork/api/discovery"
 	"github.com/TheThingsNetwork/go-account-lib/account"
+	"github.com/TheThingsNetwork/go-utils/grpc/restartstream"
+	"github.com/TheThingsNetwork/go-utils/grpc/rpclog"
 	"github.com/TheThingsNetwork/go-utils/grpc/ttnctx"
 	"github.com/TheThingsNetwork/go-utils/log"
-	"github.com/TheThingsNetwork/ttn/api/discovery"
-	"github.com/TheThingsNetwork/ttn/api/pool"
 	"github.com/TheThingsNetwork/ttn/mqtt"
+	"github.com/mwitkow/go-grpc-middleware"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -89,19 +91,28 @@ func (c ClientConfig) NewClient(appID, appAccessKey string) Client {
 	return newClient(c)
 }
 
+// DialOptions to use when connecting to components
+var DialOptions = []grpc.DialOption{
+	grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(
+		rpclog.UnaryClientInterceptor(nil),
+	)),
+	grpc.WithStreamInterceptor(grpc_middleware.ChainStreamClient(
+		restartstream.Interceptor(restartstream.DefaultSettings),
+		rpclog.StreamClientInterceptor(nil),
+	)),
+	grpc.WithBlock(),
+}
+
 func newClient(config ClientConfig) Client {
 	if !config.initialized {
 		panic("ttn-sdk: ClientConfig not initialized. Use ttnsdk.NewConfig or ttnsdk.NewCommunityConfig to generate your configuration")
 	}
 	client := &client{
-		ClientConfig: config,
+		ClientConfig:         config,
+		transportCredentials: credentials.NewTLS(config.TLSConfig),
 	}
 	if config.AccountServerAddress != "" {
 		client.account = account.New(config.AccountServerAddress)
-	}
-	client.connPool = pool.NewPool(client.getContext(context.Background()), pool.DefaultDialOptions...)
-	if config.TLSConfig != nil {
-		client.transportCredentials = credentials.NewTLS(config.TLSConfig)
 	}
 	return client
 }
@@ -126,10 +137,13 @@ type Client interface {
 
 type client struct {
 	ClientConfig
-	connPool             *pool.Pool
 	transportCredentials credentials.TransportCredentials
 	account              *account.Account
-	handler              struct {
+	discovery            struct {
+		sync.RWMutex
+		conn *grpc.ClientConn
+	}
+	handler struct {
 		sync.RWMutex
 		announcement *discovery.Announcement
 		conn         *grpc.ClientConn
@@ -154,11 +168,11 @@ func (c *client) Close() (closeErr error) {
 	if err := c.closeHandler(); err != nil {
 		closeErr = err
 	}
-	if err := c.closeMQTT(); err != nil && closeErr == nil {
+	if err := c.closeDiscovery(); err != nil && closeErr == nil {
 		closeErr = err
 	}
-	if c.connPool != nil {
-		c.connPool.Close()
+	if err := c.closeMQTT(); err != nil && closeErr == nil {
+		closeErr = err
 	}
 	return
 }

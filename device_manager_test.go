@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/TheThingsNetwork/api/handler"
+	"github.com/TheThingsNetwork/api/protocol/lorawan"
 	ttnlog "github.com/TheThingsNetwork/go-utils/log"
 	testlog "github.com/TheThingsNetwork/go-utils/log/test"
-	"github.com/TheThingsNetwork/ttn/api/handler"
-	"github.com/TheThingsNetwork/ttn/api/protocol/lorawan"
 	"github.com/TheThingsNetwork/ttn/core/types"
 	. "github.com/smartystreets/assertions"
 )
@@ -47,17 +47,17 @@ func TestDeviceManager(t *testing.T) {
 		mock.reset()
 		mock.deviceList = &handler.DeviceList{Devices: []*handler.Device{
 			&handler.Device{
-				DevId: "dev-id",
+				DevID: "dev-id",
 				Device: &handler.Device_LorawanDevice{LorawanDevice: &lorawan.Device{
-					AppEui: &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
-					DevEui: &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
+					AppEUI: &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
+					DevEUI: &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
 				}},
 			},
 		}}
 		sparseDevices, err := manager.List(0, 0)
 		a.So(err, ShouldBeNil)
 		a.So(mock.applicationIdentifier, ShouldNotBeNil)
-		a.So(mock.applicationIdentifier.AppId, ShouldEqual, "test")
+		a.So(mock.applicationIdentifier.AppID, ShouldEqual, "test")
 		devices := sparseDevices.AsDevices()
 		a.So(devices, ShouldHaveLength, 1)
 		a.So(devices[0].DevID, ShouldEqual, "dev-id")
@@ -73,18 +73,18 @@ func TestDeviceManager(t *testing.T) {
 
 		mock.reset()
 		mock.device = &handler.Device{
-			DevId: "dev-id",
+			DevID: "dev-id",
 			Device: &handler.Device_LorawanDevice{LorawanDevice: &lorawan.Device{
-				AppEui:   &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
-				DevEui:   &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
+				AppEUI:   &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
+				DevEUI:   &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
 				FCntDown: 42,
 			}},
 		}
 		device, err := manager.Get("dev-id")
 		a.So(err, ShouldBeNil)
 		a.So(mock.deviceIdentifier, ShouldNotBeNil)
-		a.So(mock.deviceIdentifier.AppId, ShouldEqual, "test")
-		a.So(mock.deviceIdentifier.DevId, ShouldEqual, "dev-id")
+		a.So(mock.deviceIdentifier.AppID, ShouldEqual, "test")
+		a.So(mock.deviceIdentifier.DevID, ShouldEqual, "dev-id")
 		a.So(device.DevID, ShouldEqual, "dev-id")
 		a.So(device.AppEUI, ShouldEqual, types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8})
 		a.So(device.DevEUI, ShouldEqual, types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8})
@@ -108,10 +108,10 @@ func TestDeviceManager(t *testing.T) {
 		})
 		a.So(err, ShouldBeNil)
 		a.So(mock.device, ShouldNotBeNil)
-		a.So(mock.device.DevId, ShouldEqual, "dev-id")
-		a.So(mock.device.GetLorawanDevice().DevId, ShouldEqual, "dev-id")
-		a.So(mock.device.GetLorawanDevice().AppEui, ShouldResemble, &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8})
-		a.So(mock.device.GetLorawanDevice().DevEui, ShouldResemble, &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8})
+		a.So(mock.device.DevID, ShouldEqual, "dev-id")
+		a.So(mock.device.GetLorawanDevice().DevID, ShouldEqual, "dev-id")
+		a.So(mock.device.GetLorawanDevice().AppEUI, ShouldResemble, &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8})
+		a.So(mock.device.GetLorawanDevice().DevEUI, ShouldResemble, &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8})
 		a.So(mock.device.GetLorawanDevice().FCntDown, ShouldEqual, 42)
 	}
 
@@ -125,8 +125,8 @@ func TestDeviceManager(t *testing.T) {
 		err = manager.Delete("dev-id")
 		a.So(err, ShouldBeNil)
 		a.So(mock.deviceIdentifier, ShouldNotBeNil)
-		a.So(mock.deviceIdentifier.AppId, ShouldEqual, "test")
-		a.So(mock.deviceIdentifier.DevId, ShouldEqual, "dev-id")
+		a.So(mock.deviceIdentifier.AppID, ShouldEqual, "test")
+		a.So(mock.deviceIdentifier.DevID, ShouldEqual, "dev-id")
 	}
 
 	{
@@ -140,10 +140,10 @@ func TestDeviceManager(t *testing.T) {
 	{
 		mock.reset()
 		mock.device = &handler.Device{
-			DevId: "dev-id",
+			DevID: "dev-id",
 			Device: &handler.Device_LorawanDevice{LorawanDevice: &lorawan.Device{
-				AppEui:   &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
-				DevEui:   &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
+				AppEUI:   &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
+				DevEUI:   &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
 				FCntDown: 42,
 			}},
 		}
@@ -171,7 +171,7 @@ func TestDeviceManager(t *testing.T) {
 		mock.reset()
 		err = device.Delete()
 		a.So(err, ShouldBeNil)
-		a.So(mock.deviceIdentifier.DevId, ShouldEqual, "dev-id")
+		a.So(mock.deviceIdentifier.DevID, ShouldEqual, "dev-id")
 	}
 
 }

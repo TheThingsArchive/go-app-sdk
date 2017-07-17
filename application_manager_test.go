@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/TheThingsNetwork/api/handler"
 	ttnlog "github.com/TheThingsNetwork/go-utils/log"
 	testlog "github.com/TheThingsNetwork/go-utils/log/test"
-	"github.com/TheThingsNetwork/ttn/api/handler"
 	. "github.com/smartystreets/assertions"
 )
 
