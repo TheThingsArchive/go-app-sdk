@@ -4,9 +4,9 @@
 package ttnsdk
 
 import (
-	"github.com/TheThingsNetwork/ttn/api/handler"
-	"github.com/TheThingsNetwork/ttn/api/protocol/lorawan"
-	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/TheThingsNetwork/api/handler"
+	"github.com/TheThingsNetwork/api/protocol/lorawan"
+	ptypes "github.com/gogo/protobuf/types"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
@@ -22,7 +22,7 @@ type mockApplicationManagerClient struct {
 	dryDownlinkResult      *handler.DryDownlinkResult
 	dryUplinkMessage       *handler.DryUplinkMessage
 	dryUplinkResult        *handler.DryUplinkResult
-	empty                  *empty.Empty
+	empty                  *ptypes.Empty
 	err                    error
 	SimulatedUplinkMessage *handler.SimulatedUplinkMessage
 }
@@ -43,7 +43,7 @@ func (m *mockApplicationManagerClient) reset() {
 	m.SimulatedUplinkMessage = nil
 }
 
-func (m *mockApplicationManagerClient) RegisterApplication(ctx context.Context, in *handler.ApplicationIdentifier, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (m *mockApplicationManagerClient) RegisterApplication(ctx context.Context, in *handler.ApplicationIdentifier, opts ...grpc.CallOption) (*ptypes.Empty, error) {
 	m.ctx = ctx
 	m.applicationIdentifier = in
 	return m.empty, m.err
@@ -53,12 +53,12 @@ func (m *mockApplicationManagerClient) GetApplication(ctx context.Context, in *h
 	m.applicationIdentifier = in
 	return m.application, m.err
 }
-func (m *mockApplicationManagerClient) SetApplication(ctx context.Context, in *handler.Application, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (m *mockApplicationManagerClient) SetApplication(ctx context.Context, in *handler.Application, opts ...grpc.CallOption) (*ptypes.Empty, error) {
 	m.ctx = ctx
 	m.application = in
 	return m.empty, m.err
 }
-func (m *mockApplicationManagerClient) DeleteApplication(ctx context.Context, in *handler.ApplicationIdentifier, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (m *mockApplicationManagerClient) DeleteApplication(ctx context.Context, in *handler.ApplicationIdentifier, opts ...grpc.CallOption) (*ptypes.Empty, error) {
 	m.ctx = ctx
 	m.applicationIdentifier = in
 	return m.empty, m.err
@@ -68,12 +68,12 @@ func (m *mockApplicationManagerClient) GetDevice(ctx context.Context, in *handle
 	m.deviceIdentifier = in
 	return m.device, m.err
 }
-func (m *mockApplicationManagerClient) SetDevice(ctx context.Context, in *handler.Device, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (m *mockApplicationManagerClient) SetDevice(ctx context.Context, in *handler.Device, opts ...grpc.CallOption) (*ptypes.Empty, error) {
 	m.ctx = ctx
 	m.device = in
 	return m.empty, m.err
 }
-func (m *mockApplicationManagerClient) DeleteDevice(ctx context.Context, in *handler.DeviceIdentifier, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (m *mockApplicationManagerClient) DeleteDevice(ctx context.Context, in *handler.DeviceIdentifier, opts ...grpc.CallOption) (*ptypes.Empty, error) {
 	m.ctx = ctx
 	m.deviceIdentifier = in
 	return m.empty, m.err
@@ -93,7 +93,7 @@ func (m *mockApplicationManagerClient) DryUplink(ctx context.Context, in *handle
 	m.dryUplinkMessage = in
 	return m.dryUplinkResult, m.err
 }
-func (m *mockApplicationManagerClient) SimulateUplink(ctx context.Context, in *handler.SimulatedUplinkMessage, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (m *mockApplicationManagerClient) SimulateUplink(ctx context.Context, in *handler.SimulatedUplinkMessage, opts ...grpc.CallOption) (*ptypes.Empty, error) {
 	m.ctx = ctx
 	m.SimulatedUplinkMessage = in
 	return m.empty, m.err

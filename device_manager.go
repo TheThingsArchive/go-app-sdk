@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/TheThingsNetwork/api/handler"
+	"github.com/TheThingsNetwork/api/protocol/lorawan"
 	"github.com/TheThingsNetwork/go-utils/grpc/ttnctx"
 	"github.com/TheThingsNetwork/go-utils/log"
 	"github.com/TheThingsNetwork/go-utils/random"
-	"github.com/TheThingsNetwork/ttn/api/handler"
-	"github.com/TheThingsNetwork/ttn/api/protocol/lorawan"
 	"github.com/TheThingsNetwork/ttn/core/types"
 )
 
@@ -73,7 +73,7 @@ func (d *deviceManager) List(limit, offset uint64) (devices DeviceList, err erro
 	ctx, cancel := context.WithTimeout(d.getContext(context.Background()), d.requestTimeout)
 	defer cancel()
 	ctx = ttnctx.OutgoingContextWithLimitAndOffset(ctx, limit, offset)
-	res, err := d.client.GetDevicesForApplication(ctx, &handler.ApplicationIdentifier{AppId: d.appID})
+	res, err := d.client.GetDevicesForApplication(ctx, &handler.ApplicationIdentifier{AppID: d.appID})
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func (d *deviceManager) List(limit, offset uint64) (devices DeviceList, err erro
 func (d *deviceManager) Get(devID string) (*Device, error) {
 	ctx, cancel := context.WithTimeout(d.getContext(context.Background()), d.requestTimeout)
 	defer cancel()
-	res, err := d.client.GetDevice(ctx, &handler.DeviceIdentifier{AppId: d.appID, DevId: devID})
+	res, err := d.client.GetDevice(ctx, &handler.DeviceIdentifier{AppID: d.appID, DevID: devID})
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +112,7 @@ func (d *deviceManager) Set(dev *Device) error {
 func (d *deviceManager) Delete(devID string) error {
 	ctx, cancel := context.WithTimeout(d.getContext(context.Background()), d.requestTimeout)
 	defer cancel()
-	_, err := d.client.DeleteDevice(ctx, &handler.DeviceIdentifier{AppId: d.appID, DevId: devID})
+	_, err := d.client.DeleteDevice(ctx, &handler.DeviceIdentifier{AppID: d.appID, DevID: devID})
 	return err
 }
 
@@ -134,16 +134,12 @@ type SparseDevice struct {
 }
 
 func (d *SparseDevice) fromProto(dev *handler.Device) {
-	d.AppID = dev.AppId
-	d.DevID = dev.DevId
+	d.AppID = dev.GetAppID()
+	d.DevID = dev.GetDevID()
 	d.Description = dev.Description
 	if lorawanDevice := dev.GetLorawanDevice(); lorawanDevice != nil {
-		if lorawanDevice.AppEui != nil {
-			d.AppEUI = *lorawanDevice.AppEui
-		}
-		if lorawanDevice.DevEui != nil {
-			d.DevEUI = *lorawanDevice.DevEui
-		}
+		d.AppEUI = lorawanDevice.GetAppEUI()
+		d.DevEUI = lorawanDevice.GetDevEUI()
 		d.DevAddr = lorawanDevice.DevAddr
 		d.NwkSKey = lorawanDevice.NwkSKey
 		d.AppSKey = lorawanDevice.AppSKey
@@ -156,8 +152,8 @@ func (d *SparseDevice) fromProto(dev *handler.Device) {
 }
 
 func (d *SparseDevice) toProto(dev *handler.Device) {
-	dev.AppId = d.AppID
-	dev.DevId = d.DevID
+	dev.AppID = d.AppID
+	dev.DevID = d.DevID
 	dev.Description = d.Description
 	dev.Latitude = d.Latitude
 	dev.Longitude = d.Longitude
@@ -167,10 +163,10 @@ func (d *SparseDevice) toProto(dev *handler.Device) {
 		dev.Device = &handler.Device_LorawanDevice{LorawanDevice: &lorawan.Device{}}
 	}
 	lorawanDevice := dev.GetLorawanDevice()
-	lorawanDevice.AppId = d.AppID
-	lorawanDevice.DevId = d.DevID
-	lorawanDevice.AppEui = &d.AppEUI
-	lorawanDevice.DevEui = &d.DevEUI
+	lorawanDevice.AppID = d.AppID
+	lorawanDevice.DevID = d.DevID
+	lorawanDevice.AppEUI = &d.AppEUI
+	lorawanDevice.DevEUI = &d.DevEUI
 	lorawanDevice.DevAddr = d.DevAddr
 	lorawanDevice.NwkSKey = d.NwkSKey
 	lorawanDevice.AppSKey = d.AppSKey

@@ -4,7 +4,11 @@
 package ttnsdk
 
 import (
+	"strings"
+
 	"github.com/TheThingsNetwork/go-utils/log"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 func (c *client) connectHandler() (err error) {
@@ -18,12 +22,18 @@ func (c *client) connectHandler() (err error) {
 			return err
 		}
 	}
+	tlsConfig, err := c.handler.announcement.GetTLSConfig()
+	if err != nil {
+		return err
+	}
 	logger := c.Logger.WithFields(log.Fields{
-		"ID":      c.handler.announcement.Id,
+		"ID":      c.handler.announcement.ID,
 		"Address": c.handler.announcement.NetAddress,
 	})
 	logger.Debug("ttn-sdk: Connecting to handler...")
-	c.handler.conn, err = c.handler.announcement.Dial(c.connPool)
+	c.handler.conn, err = grpc.Dial(
+		strings.Split(c.handler.announcement.NetAddress, ",")[0],
+		append(DialOptions, grpc.WithTransportCredentials(credentials.NewTLS(tlsConfig)))...)
 	if err != nil {
 		logger.WithError(err).Debug("ttn-sdk: Could not connect to handler")
 		return err
@@ -36,7 +46,7 @@ func (c *client) closeHandler() error {
 	c.handler.Lock()
 	defer c.handler.Unlock()
 	if c.handler.conn != nil {
-		c.connPool.CloseConn(c.handler.conn)
+		c.handler.conn.Close()
 	}
 	c.handler.conn = nil
 	return nil

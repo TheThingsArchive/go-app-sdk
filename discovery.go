@@ -6,33 +6,42 @@ package ttnsdk
 import (
 	"context"
 
-	"github.com/TheThingsNetwork/ttn/api/discovery"
+	"github.com/TheThingsNetwork/api/discovery"
 	"google.golang.org/grpc"
 )
 
 func (c *client) discover() (err error) {
-	var discoveryConn *grpc.ClientConn
 	logger := c.Logger.WithField("Address", c.DiscoveryServerAddress)
 	logger.Debug("ttn-sdk: Connecting to discovery...")
 	if c.DiscoveryServerInsecure {
-		discoveryConn, err = c.connPool.DialInsecure(c.DiscoveryServerAddress)
+		c.discovery.conn, err = grpc.Dial(c.DiscoveryServerAddress, append(DialOptions, grpc.WithInsecure())...)
 	} else {
-		discoveryConn, err = c.connPool.DialSecure(c.DiscoveryServerAddress, c.transportCredentials)
+		c.discovery.conn, err = grpc.Dial(c.DiscoveryServerAddress, append(DialOptions, grpc.WithTransportCredentials(c.transportCredentials))...)
 	}
 	if err != nil {
 		logger.WithError(err).Debug("ttn-sdk: Could not connect to discovery")
 		return err
 	}
 	logger.Debug("ttn-sdk: Connected to discovery")
-	discoveryClient := discovery.NewDiscoveryClient(discoveryConn)
+	discoveryClient := discovery.NewDiscoveryClient(c.discovery.conn)
 	ctx, cancel := context.WithTimeout(c.getContext(context.Background()), c.RequestTimeout)
 	defer cancel()
 	c.Logger.Debug("ttn-sdk: Finding handler...")
-	handler, err := discoveryClient.GetByAppID(ctx, &discovery.GetByAppIDRequest{AppId: c.appID})
+	handler, err := discoveryClient.GetByAppID(ctx, &discovery.GetByAppIDRequest{AppID: c.appID})
 	if err != nil {
 		c.Logger.WithError(err).Debug("ttn-sdk: Could not find handler for application")
 		return err
 	}
 	c.handler.announcement = handler
+	return nil
+}
+
+func (c *client) closeDiscovery() error {
+	c.discovery.Lock()
+	defer c.discovery.Unlock()
+	if c.discovery.conn != nil {
+		c.discovery.conn.Close()
+	}
+	c.discovery.conn = nil
 	return nil
 }

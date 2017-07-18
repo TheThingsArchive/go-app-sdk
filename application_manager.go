@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/TheThingsNetwork/api/handler"
 	"github.com/TheThingsNetwork/go-utils/log"
-	"github.com/TheThingsNetwork/ttn/api/handler"
 )
 
 // ApplicationManager manages an application.
@@ -85,7 +85,7 @@ type applicationManager struct {
 func (a *applicationManager) getApplication() (*handler.Application, error) {
 	ctx, cancel := context.WithTimeout(a.getContext(context.Background()), a.requestTimeout)
 	defer cancel()
-	return a.client.GetApplication(ctx, &handler.ApplicationIdentifier{AppId: a.appID})
+	return a.client.GetApplication(ctx, &handler.ApplicationIdentifier{AppID: a.appID})
 }
 
 func (a *applicationManager) setApplication(app *handler.Application) error {
@@ -142,7 +142,7 @@ func (a *applicationManager) TestCustomUplinkPayloadFunctions(jsDecoder, jsConve
 	return a.client.DryUplink(ctx, &handler.DryUplinkMessage{
 		Payload: payload,
 		App: &handler.Application{
-			AppId:         a.appID,
+			AppID:         a.appID,
 			PayloadFormat: "custom",
 			Decoder:       jsDecoder,
 			Converter:     jsConverter,
@@ -162,7 +162,7 @@ func (a *applicationManager) TestCustomDownlinkPayloadFunctions(jsEncoder string
 	return a.client.DryDownlink(ctx, &handler.DryDownlinkMessage{
 		Fields: string(fieldsJSON),
 		App: &handler.Application{
-			AppId:         a.appID,
+			AppID:         a.appID,
 			PayloadFormat: "custom",
 			Encoder:       jsEncoder,
 		},

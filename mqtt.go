@@ -29,7 +29,7 @@ func (c *client) connectMQTT() (err error) {
 		}
 	}
 	if c.handler.announcement.MqttAddress == "" {
-		c.Logger.WithField("HandlerID", c.handler.announcement.Id).Debug("ttn-sdk: Handler does not announce MQTT address")
+		c.Logger.WithField("HandlerID", c.handler.announcement.ID).Debug("ttn-sdk: Handler does not announce MQTT address")
 		return errors.New("ttn-sdk: Handler does not announce MQTT address")
 	}
 	mqttAddress, err := cleanMQTTAddress(c.handler.announcement.MqttAddress)
