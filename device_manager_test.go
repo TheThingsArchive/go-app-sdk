@@ -48,7 +48,7 @@ func TestDeviceManager(t *testing.T) {
 		mock.deviceList = &handler.DeviceList{Devices: []*handler.Device{
 			&handler.Device{
 				DevID: "dev-id",
-				Device: &handler.Device_LorawanDevice{LorawanDevice: &lorawan.Device{
+				Device: &handler.Device_LoRaWANDevice{LoRaWANDevice: &lorawan.Device{
 					AppEUI: &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
 					DevEUI: &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
 				}},
@@ -74,7 +74,7 @@ func TestDeviceManager(t *testing.T) {
 		mock.reset()
 		mock.device = &handler.Device{
 			DevID: "dev-id",
-			Device: &handler.Device_LorawanDevice{LorawanDevice: &lorawan.Device{
+			Device: &handler.Device_LoRaWANDevice{LoRaWANDevice: &lorawan.Device{
 				AppEUI:   &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
 				DevEUI:   &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
 				FCntDown: 42,
@@ -109,10 +109,10 @@ func TestDeviceManager(t *testing.T) {
 		a.So(err, ShouldBeNil)
 		a.So(mock.device, ShouldNotBeNil)
 		a.So(mock.device.DevID, ShouldEqual, "dev-id")
-		a.So(mock.device.GetLorawanDevice().DevID, ShouldEqual, "dev-id")
-		a.So(mock.device.GetLorawanDevice().AppEUI, ShouldResemble, &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8})
-		a.So(mock.device.GetLorawanDevice().DevEUI, ShouldResemble, &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8})
-		a.So(mock.device.GetLorawanDevice().FCntDown, ShouldEqual, 42)
+		a.So(mock.device.GetLoRaWANDevice().DevID, ShouldEqual, "dev-id")
+		a.So(mock.device.GetLoRaWANDevice().AppEUI, ShouldResemble, &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8})
+		a.So(mock.device.GetLoRaWANDevice().DevEUI, ShouldResemble, &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8})
+		a.So(mock.device.GetLoRaWANDevice().FCntDown, ShouldEqual, 42)
 	}
 
 	{
@@ -141,7 +141,7 @@ func TestDeviceManager(t *testing.T) {
 		mock.reset()
 		mock.device = &handler.Device{
 			DevID: "dev-id",
-			Device: &handler.Device_LorawanDevice{LorawanDevice: &lorawan.Device{
+			Device: &handler.Device_LoRaWANDevice{LoRaWANDevice: &lorawan.Device{
 				AppEUI:   &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
 				DevEUI:   &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
 				FCntDown: 42,
@@ -153,7 +153,7 @@ func TestDeviceManager(t *testing.T) {
 		device.FCntDown = 0
 		err = device.Update()
 		a.So(err, ShouldBeNil)
-		a.So(mock.device.GetLorawanDevice().FCntDown, ShouldEqual, 0)
+		a.So(mock.device.GetLoRaWANDevice().FCntDown, ShouldEqual, 0)
 
 		mock.reset()
 		devMock.reset()
@@ -166,7 +166,7 @@ func TestDeviceManager(t *testing.T) {
 		devMock.devAddrResponse = &lorawan.DevAddrResponse{DevAddr: &types.DevAddr{1, 2, 3, 4}}
 		err = device.Personalize(types.NwkSKey{}, types.AppSKey{})
 		a.So(err, ShouldBeNil)
-		a.So(mock.device.GetLorawanDevice().DevAddr, ShouldResemble, &types.DevAddr{1, 2, 3, 4})
+		a.So(mock.device.GetLoRaWANDevice().DevAddr, ShouldResemble, &types.DevAddr{1, 2, 3, 4})
 
 		mock.reset()
 		err = device.Delete()

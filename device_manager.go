@@ -137,7 +137,7 @@ func (d *SparseDevice) fromProto(dev *handler.Device) {
 	d.AppID = dev.GetAppID()
 	d.DevID = dev.GetDevID()
 	d.Description = dev.Description
-	if lorawanDevice := dev.GetLorawanDevice(); lorawanDevice != nil {
+	if lorawanDevice := dev.GetLoRaWANDevice(); lorawanDevice != nil {
 		d.AppEUI = lorawanDevice.GetAppEUI()
 		d.DevEUI = lorawanDevice.GetDevEUI()
 		d.DevAddr = lorawanDevice.DevAddr
@@ -160,9 +160,9 @@ func (d *SparseDevice) toProto(dev *handler.Device) {
 	dev.Altitude = d.Altitude
 	dev.Attributes = d.Attributes
 	if dev.Device == nil {
-		dev.Device = &handler.Device_LorawanDevice{LorawanDevice: &lorawan.Device{}}
+		dev.Device = &handler.Device_LoRaWANDevice{LoRaWANDevice: &lorawan.Device{}}
 	}
-	lorawanDevice := dev.GetLorawanDevice()
+	lorawanDevice := dev.GetLoRaWANDevice()
 	lorawanDevice.AppID = d.AppID
 	lorawanDevice.DevID = d.DevID
 	lorawanDevice.AppEUI = &d.AppEUI
@@ -261,7 +261,7 @@ func (d *Device) PersonalizeFunc(personalizeFunc func(types.DevAddr) (types.NwkS
 
 func (d *Device) fromProto(dev *handler.Device) {
 	d.SparseDevice.fromProto(dev)
-	if lorawanDevice := dev.GetLorawanDevice(); lorawanDevice != nil {
+	if lorawanDevice := dev.GetLoRaWANDevice(); lorawanDevice != nil {
 		d.FCntUp = lorawanDevice.FCntUp
 		d.FCntDown = lorawanDevice.FCntDown
 		d.DisableFCntCheck = lorawanDevice.DisableFCntCheck
@@ -273,7 +273,7 @@ func (d *Device) fromProto(dev *handler.Device) {
 
 func (d *Device) toProto(dev *handler.Device) {
 	d.SparseDevice.toProto(dev)
-	lorawanDevice := dev.GetLorawanDevice()
+	lorawanDevice := dev.GetLoRaWANDevice()
 	lorawanDevice.FCntUp = d.FCntUp
 	lorawanDevice.FCntDown = d.FCntDown
 	lorawanDevice.DisableFCntCheck = d.DisableFCntCheck
