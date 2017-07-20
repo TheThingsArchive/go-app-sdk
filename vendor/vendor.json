@@ -3,52 +3,52 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "OSmlY5RrhhzLG2S0l2hP6WlVW+8=",
+			"checksumSHA1": "/xFhCCO4tvv9WcIRMjHs55w5/PA=",
 			"path": "github.com/TheThingsNetwork/api",
-			"revision": "88b81f1136963b574b87007dc0f91cdc47c7906e",
-			"revisionTime": "2017-07-17T14:41:48Z"
+			"revision": "1ab2de35e6f0bfd1df37a88895dae2767a80b55c",
+			"revisionTime": "2017-07-20T12:58:27Z"
 		},
 		{
-			"checksumSHA1": "R73SmmA7FCOZNXFDR43ldCQe/vU=",
+			"checksumSHA1": "BeCVH8aUU7H8gvBJR3nowzoiJcw=",
 			"path": "github.com/TheThingsNetwork/api/broker",
-			"revision": "88b81f1136963b574b87007dc0f91cdc47c7906e",
-			"revisionTime": "2017-07-17T14:41:48Z"
+			"revision": "1ab2de35e6f0bfd1df37a88895dae2767a80b55c",
+			"revisionTime": "2017-07-20T12:58:27Z"
 		},
 		{
-			"checksumSHA1": "i1ITKhoXxo1QMPAvETxAQbo/oc4=",
+			"checksumSHA1": "x+yOylVjeQV3c/1EPZBPyWnf0iw=",
 			"path": "github.com/TheThingsNetwork/api/discovery",
-			"revision": "88b81f1136963b574b87007dc0f91cdc47c7906e",
-			"revisionTime": "2017-07-17T14:41:48Z"
+			"revision": "1ab2de35e6f0bfd1df37a88895dae2767a80b55c",
+			"revisionTime": "2017-07-20T12:58:27Z"
 		},
 		{
-			"checksumSHA1": "foHlteWuB3gGx/Dtt+0UMHAd4HE=",
+			"checksumSHA1": "dGSAMiiA5DyPLWsP00mtMYXg2SQ=",
 			"path": "github.com/TheThingsNetwork/api/gateway",
-			"revision": "88b81f1136963b574b87007dc0f91cdc47c7906e",
-			"revisionTime": "2017-07-17T14:41:48Z"
+			"revision": "1ab2de35e6f0bfd1df37a88895dae2767a80b55c",
+			"revisionTime": "2017-07-20T12:58:27Z"
 		},
 		{
-			"checksumSHA1": "7w5iRQIxMM7dlRN77AiTQuIDtI4=",
+			"checksumSHA1": "74nV28iT3PoIbne4Ys+nwn84Znk=",
 			"path": "github.com/TheThingsNetwork/api/handler",
-			"revision": "88b81f1136963b574b87007dc0f91cdc47c7906e",
-			"revisionTime": "2017-07-17T14:41:48Z"
+			"revision": "1ab2de35e6f0bfd1df37a88895dae2767a80b55c",
+			"revisionTime": "2017-07-20T12:58:27Z"
 		},
 		{
-			"checksumSHA1": "P+D7DlVQ582iPQVS2mkZp5qya7U=",
+			"checksumSHA1": "OfBlbK08SkZS0CRoXrfwursrIL0=",
 			"path": "github.com/TheThingsNetwork/api/protocol",
-			"revision": "88b81f1136963b574b87007dc0f91cdc47c7906e",
-			"revisionTime": "2017-07-17T14:41:48Z"
+			"revision": "1ab2de35e6f0bfd1df37a88895dae2767a80b55c",
+			"revisionTime": "2017-07-20T12:58:27Z"
 		},
 		{
-			"checksumSHA1": "DFAPm8VseSyhGO94xbdOtwVNWao=",
+			"checksumSHA1": "OHCKp4ldG0flF+ZMkRHID4RYkLo=",
 			"path": "github.com/TheThingsNetwork/api/protocol/lorawan",
-			"revision": "88b81f1136963b574b87007dc0f91cdc47c7906e",
-			"revisionTime": "2017-07-17T14:41:48Z"
+			"revision": "1ab2de35e6f0bfd1df37a88895dae2767a80b55c",
+			"revisionTime": "2017-07-20T12:58:27Z"
 		},
 		{
-			"checksumSHA1": "9AxZkr9XtFavG8h+VCvWvlAqNPg=",
+			"checksumSHA1": "Kdh5oEEhW0jMFj2B1vh9ahQAfA8=",
 			"path": "github.com/TheThingsNetwork/api/trace",
-			"revision": "88b81f1136963b574b87007dc0f91cdc47c7906e",
-			"revisionTime": "2017-07-17T14:41:48Z"
+			"revision": "1ab2de35e6f0bfd1df37a88895dae2767a80b55c",
+			"revisionTime": "2017-07-20T12:58:27Z"
 		},
 		{
 			"checksumSHA1": "t0RI2WKlx2C+y/BNqHPrhPcYOPE=",
@@ -131,8 +131,8 @@
 		{
 			"checksumSHA1": "H/qmI9ogJaP1hx+AJoalahqQ20Q=",
 			"path": "github.com/TheThingsNetwork/go-utils/log",
-			"revision": "ed8e7e8c0d30b955a70828e65f414c83721e16c2",
-			"revisionTime": "2017-07-12T07:22:03Z"
+			"revision": "ad1c337ab7ec67eb418f8de8c98c26d9bf5e0fb3",
+			"revisionTime": "2017-07-20T09:32:05Z"
 		},
 		{
 			"checksumSHA1": "FCtEPJzinLIWyAcZzM1TsbkWC7o=",
