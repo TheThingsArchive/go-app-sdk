@@ -263,6 +263,7 @@ func (d *devicePubSub) Close() {
 
 // ApplicationPubSub interface for publishing and subscribing to devices in an application
 type ApplicationPubSub interface {
+	Publish(devID string, downlink *types.DownlinkMessage) error
 	Device(devID string) DevicePubSub
 	AllDevices() DeviceSub
 	Close()
@@ -296,6 +297,16 @@ func (a *applicationPubSub) Device(devID string) DevicePubSub {
 
 func (a *applicationPubSub) AllDevices() DeviceSub {
 	return a.Device("+")
+}
+
+func (a *applicationPubSub) Publish(devID string, downlink *types.DownlinkMessage) error {
+	d := &devicePubSub{
+		logger: a.logger,
+		client: a.client,
+		appID:  a.appID,
+		devID:  devID,
+	}
+	return d.Publish(downlink)
 }
 
 func (a *applicationPubSub) Close() {
