@@ -183,7 +183,7 @@ func (d *SparseDevice) AsDevice() *Device {
 
 // Device in an application
 type Device struct {
-	deviceManager *deviceManager
+	deviceManager DeviceManager
 
 	SparseDevice
 	FCntUp                uint32    `json:"f_cnt_up"`
@@ -205,9 +205,23 @@ func (d *Device) addActivationConstraint(c string) {
 	d.ActivationConstraints = strings.Join(constraints, ",")
 }
 
+// IsNew indicates whether the device is new.
+func (d *Device) IsNew() bool { return d.deviceManager == nil }
+
+// SetManager sets the manager of the device. This function panics if this is not a new device.
+func (d *Device) SetManager(manager DeviceManager) {
+	if d.deviceManager == manager {
+		return
+	}
+	if !d.IsNew() {
+		panic("ttn-sdk: you can not change the device manager")
+	}
+	d.deviceManager = manager
+}
+
 // Update the device. This function panics if this is a new device.
 func (d *Device) Update() error {
-	if d.deviceManager == nil {
+	if d.IsNew() {
 		panic("ttn-sdk: you can not update new devices")
 	}
 	return d.deviceManager.Set(d)
@@ -215,7 +229,7 @@ func (d *Device) Update() error {
 
 // Delete the device. This function panics if this is a new device.
 func (d *Device) Delete() error {
-	if d.deviceManager == nil {
+	if d.IsNew() {
 		panic("ttn-sdk: you can not update new devices")
 	}
 	return d.deviceManager.Delete(d.DevID)
@@ -243,13 +257,17 @@ func (d *Device) Personalize(nwkSKey types.NwkSKey, appSKey types.AppSKey) error
 // to the result of the personalizeFunc. This function panics if this is a new device, so make sure you Get() the device
 // first.
 func (d *Device) PersonalizeFunc(personalizeFunc func(types.DevAddr) (types.NwkSKey, types.AppSKey)) error {
-	if d.deviceManager == nil {
+	if d.IsNew() {
 		panic("ttn-sdk: you can not update new devices. Use the Get() function to retrieve the device from the server first.")
 	}
+	manager, ok := d.deviceManager.(*deviceManager)
+	if !ok {
+		panic("ttn-sdk: you can only personalize devices on The Things Network")
+	}
 	d.addActivationConstraint("abp")
-	ctx, cancel := context.WithTimeout(d.deviceManager.getContext(context.Background()), d.deviceManager.requestTimeout)
+	ctx, cancel := context.WithTimeout(manager.getContext(context.Background()), manager.requestTimeout)
 	defer cancel()
-	res, err := d.deviceManager.devAddrClient.GetDevAddr(ctx, &lorawan.DevAddrRequest{Usage: strings.Split(d.ActivationConstraints, ",")})
+	res, err := manager.devAddrClient.GetDevAddr(ctx, &lorawan.DevAddrRequest{Usage: strings.Split(d.ActivationConstraints, ",")})
 	if err != nil {
 		return err
 	}
