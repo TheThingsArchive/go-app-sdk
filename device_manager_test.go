@@ -131,10 +131,23 @@ func TestDeviceManager(t *testing.T) {
 
 	{
 		dev := new(Device)
+		a.So(dev.IsNew(), ShouldBeTrue)
 		// Can't call these funcs on a new device
 		a.So(func() { dev.Update() }, ShouldPanic)
 		a.So(func() { dev.Personalize(types.NwkSKey{}, types.AppSKey{}) }, ShouldPanic)
 		a.So(func() { dev.Delete() }, ShouldPanic)
+	}
+
+	{
+		dev := new(Device)
+		a.So(dev.IsNew(), ShouldBeTrue)
+		dev.SetManager(manager)
+		a.So(dev.IsNew(), ShouldBeFalse)
+		// You can set the same manager
+		a.So(func() { dev.SetManager(manager) }, ShouldNotPanic)
+		// But you can't change the manager
+		otherManager := &deviceManager{}
+		a.So(func() { dev.SetManager(otherManager) }, ShouldPanic)
 	}
 
 	{
