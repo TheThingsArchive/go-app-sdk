@@ -165,8 +165,8 @@ func (d *SparseDevice) toProto(dev *handler.Device) {
 	lorawanDevice := dev.GetLoRaWANDevice()
 	lorawanDevice.AppID = d.AppID
 	lorawanDevice.DevID = d.DevID
-	lorawanDevice.AppEUI = &d.AppEUI
-	lorawanDevice.DevEUI = &d.DevEUI
+	lorawanDevice.AppEUI = d.AppEUI
+	lorawanDevice.DevEUI = d.DevEUI
 	lorawanDevice.DevAddr = d.DevAddr
 	lorawanDevice.NwkSKey = d.NwkSKey
 	lorawanDevice.AppSKey = d.AppSKey
@@ -271,8 +271,8 @@ func (d *Device) PersonalizeFunc(personalizeFunc func(types.DevAddr) (types.NwkS
 	if err != nil {
 		return err
 	}
-	d.DevAddr = res.DevAddr
-	nwkSKey, appSKey := personalizeFunc(*res.DevAddr)
+	d.DevAddr = &res.DevAddr
+	nwkSKey, appSKey := personalizeFunc(res.DevAddr)
 	d.NwkSKey, d.AppSKey = &nwkSKey, &appSKey
 	return d.Update()
 }

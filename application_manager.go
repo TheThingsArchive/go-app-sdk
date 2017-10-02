@@ -141,7 +141,7 @@ func (a *applicationManager) TestCustomUplinkPayloadFunctions(jsDecoder, jsConve
 	defer cancel()
 	return a.client.DryUplink(ctx, &handler.DryUplinkMessage{
 		Payload: payload,
-		App: &handler.Application{
+		App: handler.Application{
 			AppID:         a.appID,
 			PayloadFormat: "custom",
 			Decoder:       jsDecoder,
@@ -161,7 +161,7 @@ func (a *applicationManager) TestCustomDownlinkPayloadFunctions(jsEncoder string
 	}
 	return a.client.DryDownlink(ctx, &handler.DryDownlinkMessage{
 		Fields: string(fieldsJSON),
-		App: &handler.Application{
+		App: handler.Application{
 			AppID:         a.appID,
 			PayloadFormat: "custom",
 			Encoder:       jsEncoder,
