@@ -49,8 +49,8 @@ func TestDeviceManager(t *testing.T) {
 			&handler.Device{
 				DevID: "dev-id",
 				Device: &handler.Device_LoRaWANDevice{LoRaWANDevice: &lorawan.Device{
-					AppEUI: &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
-					DevEUI: &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
+					AppEUI: types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
+					DevEUI: types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
 				}},
 			},
 		}}
@@ -75,8 +75,8 @@ func TestDeviceManager(t *testing.T) {
 		mock.device = &handler.Device{
 			DevID: "dev-id",
 			Device: &handler.Device_LoRaWANDevice{LoRaWANDevice: &lorawan.Device{
-				AppEUI:   &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
-				DevEUI:   &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
+				AppEUI:   types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
+				DevEUI:   types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
 				FCntDown: 42,
 			}},
 		}
@@ -110,8 +110,8 @@ func TestDeviceManager(t *testing.T) {
 		a.So(mock.device, ShouldNotBeNil)
 		a.So(mock.device.DevID, ShouldEqual, "dev-id")
 		a.So(mock.device.GetLoRaWANDevice().DevID, ShouldEqual, "dev-id")
-		a.So(mock.device.GetLoRaWANDevice().AppEUI, ShouldResemble, &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8})
-		a.So(mock.device.GetLoRaWANDevice().DevEUI, ShouldResemble, &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8})
+		a.So(mock.device.GetLoRaWANDevice().AppEUI, ShouldResemble, types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8})
+		a.So(mock.device.GetLoRaWANDevice().DevEUI, ShouldResemble, types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8})
 		a.So(mock.device.GetLoRaWANDevice().FCntDown, ShouldEqual, 42)
 	}
 
@@ -155,8 +155,8 @@ func TestDeviceManager(t *testing.T) {
 		mock.device = &handler.Device{
 			DevID: "dev-id",
 			Device: &handler.Device_LoRaWANDevice{LoRaWANDevice: &lorawan.Device{
-				AppEUI:   &types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
-				DevEUI:   &types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
+				AppEUI:   types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
+				DevEUI:   types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
 				FCntDown: 42,
 			}},
 		}
@@ -176,7 +176,7 @@ func TestDeviceManager(t *testing.T) {
 
 		mock.reset()
 		devMock.reset()
-		devMock.devAddrResponse = &lorawan.DevAddrResponse{DevAddr: &types.DevAddr{1, 2, 3, 4}}
+		devMock.devAddrResponse = &lorawan.DevAddrResponse{DevAddr: types.DevAddr{1, 2, 3, 4}}
 		err = device.Personalize(types.NwkSKey{}, types.AppSKey{})
 		a.So(err, ShouldBeNil)
 		a.So(mock.device.GetLoRaWANDevice().DevAddr, ShouldResemble, &types.DevAddr{1, 2, 3, 4})
