@@ -25,7 +25,8 @@ const (
 
 func Example() {
 	log := apex.Stdout() // We use a cli logger at Stdout
-	ttnlog.Set(log)      // Set the logger as default for TTN
+	log.MustParseLevel("debug")
+	ttnlog.Set(log) // Set the logger as default for TTN
 
 	// We get the application ID and application access key from the environment
 	appID := os.Getenv("TTN_APP_ID")
@@ -80,7 +81,10 @@ func Example() {
 	dev.Description = "A new device in my amazing app"
 	dev.AppEUI = types.AppEUI{0x70, 0xB3, 0xD5, 0x7E, 0xF0, 0x00, 0x00, 0x24} // Use the real AppEUI here
 	dev.DevEUI = types.DevEUI{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08} // Use the real DevEUI here
-	random.FillBytes(dev.AppKey[:])                                           // Generate a random AppKey
+
+	// Set a random AppKey
+	dev.AppKey = new(types.AppKey)
+	random.FillBytes(dev.AppKey[:])
 
 	err = devices.Set(dev)
 	if err != nil {
@@ -127,12 +131,14 @@ func Example() {
 	if err != nil {
 		log.WithError(err).Fatal("my-amazing-app: could not subscribe to activations")
 	}
+	log.Debug("After this point, the program won't show anything until we receive an activation.")
 	for activation := range activations {
 		log.WithFields(ttnlog.Fields{
 			"appEUI":  activation.AppEUI.String(),
 			"devEUI":  activation.DevEUI.String(),
 			"devAddr": activation.DevAddr.String(),
 		}).Info("my-amazing-app: received activation")
+		break // normally you wouldn't do this
 	}
 
 	// Unsubscribe from activations
@@ -146,6 +152,7 @@ func Example() {
 	if err != nil {
 		log.WithError(err).Fatal("my-amazing-app: could not subscribe to events")
 	}
+	log.Debug("After this point, the program won't show anything until we receive an application event.")
 	for event := range events {
 		log.WithFields(ttnlog.Fields{
 			"devID":     event.DevID,
@@ -155,6 +162,7 @@ func Example() {
 			eventJSON, _ := json.Marshal(event.Data)
 			fmt.Println("Event data:" + string(eventJSON))
 		}
+		break // normally you wouldn't do this
 	}
 
 	// Unsubscribe from events
@@ -176,9 +184,11 @@ func Example() {
 	if err != nil {
 		log.WithError(err).Fatal("my-amazing-app: could not subscribe to uplink messages")
 	}
+	log.Debug("After this point, the program won't show anything until we receive an uplink message from device my-new-device.")
 	for message := range uplink {
 		hexPayload := hex.EncodeToString(message.PayloadRaw)
 		log.WithField("data", hexPayload).Info("my-amazing-app: received uplink")
+		break // normally you wouldn't do this
 	}
 
 	// Unsubscribe from uplink
