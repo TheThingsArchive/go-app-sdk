@@ -6,6 +6,8 @@
 
 ## Usage
 
+To avoid issues with incompatible dependencies, we recommend using [vgo](https://github.com/golang/go/wiki/vgo) or [dep](https://github.com/golang/dep).
+
 See the examples [on GoDoc](https://godoc.org/github.com/TheThingsNetwork/go-app-sdk#example-package).
 
 ## License

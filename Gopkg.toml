@@ -1,0 +1,7 @@
+[[constraint]]
+  name = "github.com/TheThingsNetwork/ttn"
+  version = "2.9.4"
+
+[prune]
+  go-tests = true
+  unused-packages = true
