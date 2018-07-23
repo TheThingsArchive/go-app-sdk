@@ -6,24 +6,15 @@
 
 ## Usage
 
-To avoid issues with incompatible dependencies, we recommend using [dep](https://github.com/golang/dep) or [vgo](https://github.com/golang/go/wiki/vgo).
+To avoid issues with incompatible dependencies, we recommend using [vgo](https://github.com/golang/go/wiki/vgo).
 
 Assuming you're working on a project `github.com/your-username/your-project`:
-
-With `dep`:
-
-```
-go get -u github.com/golang/dep/cmd/dep
-cd $GOPATH/src/github.com/your-username/your-project
-dep ensure
-```
-
-With `vgo`:
 
 ```
 go get -u golang.org/x/vgo
 cd $GOPATH/src/github.com/your-username/your-project
 vgo mod -init -module github.com/your-username/your-project
+vgo get github.com/TheThingsNetwork/go-app-sdk
 vgo mod -vendor
 ```
 
