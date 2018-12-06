@@ -1,5 +1,7 @@
-// Copyright © 2017 The Things Network
+// Copyright © 2018 The Things Network
 // Use of this source code is governed by the MIT license that can be found in the LICENSE file.
+//
+// +build go1.9
 
 package ttnsdk
 
@@ -120,8 +122,8 @@ func (d *deviceManager) Delete(devID string) error {
 type SparseDevice struct {
 	AppID       string            `json:"app_id"`
 	DevID       string            `json:"dev_id"`
-	AppEUI      types.AppEUI      `json:"app_eui"`
-	DevEUI      types.DevEUI      `json:"dev_eui"`
+	AppEUI      AppEUI            `json:"app_eui"`
+	DevEUI      DevEUI            `json:"dev_eui"`
 	Description string            `json:"description,omitempty"`
 	DevAddr     *DevAddr          `json:"dev_addr,omitempty"`
 	NwkSKey     *NwkSKey          `json:"nwk_s_key,omitempty"`

@@ -1,5 +1,7 @@
-// Copyright © 2017 The Things Network
+// Copyright © 2018 The Things Network
 // Use of this source code is governed by the MIT license that can be found in the LICENSE file.
+//
+// +build go1.9
 
 package ttnsdk
 
@@ -101,8 +103,8 @@ func TestDeviceManager(t *testing.T) {
 		err = manager.Set(&Device{
 			SparseDevice: SparseDevice{
 				DevID:  "dev-id",
-				AppEUI: AppEUI([8]byte{1, 2, 3, 4, 5, 6, 7, 8}),
-				DevEUI: DevEUI([8]byte{1, 2, 3, 4, 5, 6, 7, 8}),
+				AppEUI: AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
+				DevEUI: DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
 			},
 			FCntDown: 42,
 		})
