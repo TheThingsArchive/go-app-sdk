@@ -62,10 +62,10 @@ func TestClient(t *testing.T) {
 		SparseDevice: SparseDevice{
 			AppID:       appID,
 			DevID:       "sdk-test",
-			AppEUI:      appEUI,
-			DevEUI:      devEUI,
+			AppEUI:      AppEUI(appEUI),
+			DevEUI:      DevEUI(devEUI),
 			Description: "SDK Test Device",
-			AppKey:      &appKey,
+			AppKey:      (*AppKey)(&appKey),
 		},
 		Uses32BitFCnt: true,
 	}

@@ -123,10 +123,10 @@ type SparseDevice struct {
 	AppEUI      types.AppEUI      `json:"app_eui"`
 	DevEUI      types.DevEUI      `json:"dev_eui"`
 	Description string            `json:"description,omitempty"`
-	DevAddr     *types.DevAddr    `json:"dev_addr,omitempty"`
-	NwkSKey     *types.NwkSKey    `json:"nwk_s_key,omitempty"`
-	AppSKey     *types.AppSKey    `json:"app_s_key,omitempty"`
-	AppKey      *types.AppKey     `json:"app_key,omitempty"`
+	DevAddr     *DevAddr          `json:"dev_addr,omitempty"`
+	NwkSKey     *NwkSKey          `json:"nwk_s_key,omitempty"`
+	AppSKey     *AppSKey          `json:"app_s_key,omitempty"`
+	AppKey      *AppKey           `json:"app_key,omitempty"`
 	Latitude    float32           `json:"latitude,omitempty"`
 	Longitude   float32           `json:"longitude,omitempty"`
 	Altitude    int32             `json:"altitude,omitempty"`
@@ -138,12 +138,12 @@ func (d *SparseDevice) fromProto(dev *handler.Device) {
 	d.DevID = dev.GetDevID()
 	d.Description = dev.Description
 	if lorawanDevice := dev.GetLoRaWANDevice(); lorawanDevice != nil {
-		d.AppEUI = lorawanDevice.GetAppEUI()
-		d.DevEUI = lorawanDevice.GetDevEUI()
-		d.DevAddr = lorawanDevice.DevAddr
-		d.NwkSKey = lorawanDevice.NwkSKey
-		d.AppSKey = lorawanDevice.AppSKey
-		d.AppKey = lorawanDevice.AppKey
+		d.AppEUI = AppEUI(lorawanDevice.GetAppEUI())
+		d.DevEUI = DevEUI(lorawanDevice.GetDevEUI())
+		d.DevAddr = (*DevAddr)(lorawanDevice.DevAddr)
+		d.NwkSKey = (*NwkSKey)(lorawanDevice.NwkSKey)
+		d.AppSKey = (*AppSKey)(lorawanDevice.AppSKey)
+		d.AppKey = (*AppKey)(lorawanDevice.AppKey)
 	}
 	d.Latitude = dev.Latitude
 	d.Longitude = dev.Longitude
@@ -165,12 +165,12 @@ func (d *SparseDevice) toProto(dev *handler.Device) {
 	lorawanDevice := dev.GetLoRaWANDevice()
 	lorawanDevice.AppID = d.AppID
 	lorawanDevice.DevID = d.DevID
-	lorawanDevice.AppEUI = d.AppEUI
-	lorawanDevice.DevEUI = d.DevEUI
-	lorawanDevice.DevAddr = d.DevAddr
-	lorawanDevice.NwkSKey = d.NwkSKey
-	lorawanDevice.AppSKey = d.AppSKey
-	lorawanDevice.AppKey = d.AppKey
+	lorawanDevice.AppEUI = types.AppEUI(d.AppEUI)
+	lorawanDevice.DevEUI = types.DevEUI(d.DevEUI)
+	lorawanDevice.DevAddr = (*types.DevAddr)(d.DevAddr)
+	lorawanDevice.NwkSKey = (*types.NwkSKey)(d.NwkSKey)
+	lorawanDevice.AppSKey = (*types.AppSKey)(d.AppSKey)
+	lorawanDevice.AppKey = (*types.AppKey)(d.AppKey)
 }
 
 // AsDevice wraps the *SparseDevice and returns a *Device containing that sparse device
@@ -238,7 +238,7 @@ func (d *Device) Delete() error {
 // PersonalizeRandom personalizes a device by requesting a DevAddr from the network, and setting the NwkSKey and AppSKey
 // to randomly generated values. This function panics if this is a new device, so make sure you Get() the device first.
 func (d *Device) PersonalizeRandom() error {
-	return d.PersonalizeFunc(func(_ types.DevAddr) (nwkSKey types.NwkSKey, appSKey types.AppSKey) {
+	return d.PersonalizeFunc(func(_ DevAddr) (nwkSKey NwkSKey, appSKey AppSKey) {
 		random.FillBytes(nwkSKey[:])
 		random.FillBytes(appSKey[:])
 		return
@@ -247,8 +247,8 @@ func (d *Device) PersonalizeRandom() error {
 
 // Personalize a device by requesting a DevAddr from the network, and setting the NwkSKey and AppSKey to the given values.
 // This function panics if this is a new device, so make sure you Get() the device first.
-func (d *Device) Personalize(nwkSKey types.NwkSKey, appSKey types.AppSKey) error {
-	return d.PersonalizeFunc(func(_ types.DevAddr) (types.NwkSKey, types.AppSKey) {
+func (d *Device) Personalize(nwkSKey NwkSKey, appSKey AppSKey) error {
+	return d.PersonalizeFunc(func(_ DevAddr) (NwkSKey, AppSKey) {
 		return nwkSKey, appSKey
 	})
 }
@@ -256,7 +256,7 @@ func (d *Device) Personalize(nwkSKey types.NwkSKey, appSKey types.AppSKey) error
 // PersonalizeFunc personalizes a device by requesting a DevAddr from the network, and setting the NwkSKey and AppSKey
 // to the result of the personalizeFunc. This function panics if this is a new device, so make sure you Get() the device
 // first.
-func (d *Device) PersonalizeFunc(personalizeFunc func(types.DevAddr) (types.NwkSKey, types.AppSKey)) error {
+func (d *Device) PersonalizeFunc(personalizeFunc func(DevAddr) (NwkSKey, AppSKey)) error {
 	if d.IsNew() {
 		panic("ttn-sdk: you can not update new devices. Use the Get() function to retrieve the device from the server first.")
 	}
@@ -271,8 +271,10 @@ func (d *Device) PersonalizeFunc(personalizeFunc func(types.DevAddr) (types.NwkS
 	if err != nil {
 		return err
 	}
-	d.DevAddr = &res.DevAddr
-	nwkSKey, appSKey := personalizeFunc(res.DevAddr)
+	d.DevAddr = (*DevAddr)(&res.DevAddr)
+	nwkSKey, appSKey := personalizeFunc(DevAddr(res.DevAddr))
+
+	// d.NwkSKey, d.AppSKey = (*NwkSKey)(&nwkSKey), (*AppSKey)(&appSKey)
 	d.NwkSKey, d.AppSKey = &nwkSKey, &appSKey
 	return d.Update()
 }

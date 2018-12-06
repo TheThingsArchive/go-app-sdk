@@ -171,7 +171,7 @@ func TestMQTT(t *testing.T) {
 		downlink <- &msg
 	})
 
-	err = pubsub.Publish("test", &types.DownlinkMessage{
+	err = pubsub.Publish("test", &DownlinkMessage{
 		AppID:      "test",
 		DevID:      "test",
 		PayloadRaw: []byte{0x01, 0x02, 0x03, 0x04},

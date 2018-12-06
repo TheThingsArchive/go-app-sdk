@@ -69,16 +69,16 @@ var mqttBufferSize = 10
 
 // DevicePub interface for publishing downlink messages to the device
 type DevicePub interface {
-	Publish(*types.DownlinkMessage) error
+	Publish(*DownlinkMessage) error
 }
 
 // DeviceSub interface for subscribing to uplink messages and events from the device
 type DeviceSub interface {
-	SubscribeUplink() (<-chan *types.UplinkMessage, error)
+	SubscribeUplink() (<-chan *UplinkMessage, error)
 	UnsubscribeUplink() error
-	SubscribeEvents() (<-chan *types.DeviceEvent, error)
+	SubscribeEvents() (<-chan *DeviceEvent, error)
 	UnsubscribeEvents() error
-	SubscribeActivations() (<-chan *types.Activation, error)
+	SubscribeActivations() (<-chan *Activation, error)
 	UnsubscribeActivations() error
 	Close()
 }
@@ -99,21 +99,21 @@ type devicePubSub struct {
 	devID string
 
 	sync.RWMutex
-	uplink      chan *types.UplinkMessage
-	events      chan *types.DeviceEvent
-	activations chan *types.Activation
+	uplink      chan *UplinkMessage
+	events      chan *DeviceEvent
+	activations chan *Activation
 }
 
-func (d *devicePubSub) Publish(downlink *types.DownlinkMessage) error {
+func (d *devicePubSub) Publish(downlink *DownlinkMessage) error {
 	msg := *downlink
 	msg.AppID = d.appID
 	msg.DevID = d.devID
-	token := d.client.PublishDownlink(msg)
+	token := d.client.PublishDownlink(types.DownlinkMessage(msg))
 	token.Wait()
 	return token.Error()
 }
 
-func (d *devicePubSub) SubscribeUplink() (<-chan *types.UplinkMessage, error) {
+func (d *devicePubSub) SubscribeUplink() (<-chan *UplinkMessage, error) {
 	if err := d.ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func (d *devicePubSub) SubscribeUplink() (<-chan *types.UplinkMessage, error) {
 	if d.uplink != nil {
 		return d.uplink, nil
 	}
-	d.uplink = make(chan *types.UplinkMessage, mqttBufferSize)
+	d.uplink = make(chan *UplinkMessage, mqttBufferSize)
 	token := d.client.SubscribeDeviceUplink(d.appID, d.devID, func(_ mqtt.Client, appID string, devID string, msg types.UplinkMessage) {
 		msg.AppID = appID
 		msg.DevID = devID
@@ -132,7 +132,7 @@ func (d *devicePubSub) SubscribeUplink() (<-chan *types.UplinkMessage, error) {
 			return
 		}
 		select {
-		case d.uplink <- &msg:
+		case d.uplink <- (*UplinkMessage)(&msg):
 		default:
 		}
 	})
@@ -158,7 +158,7 @@ func (d *devicePubSub) UnsubscribeUplink() error {
 	return token.Error()
 }
 
-func (d *devicePubSub) SubscribeEvents() (<-chan *types.DeviceEvent, error) {
+func (d *devicePubSub) SubscribeEvents() (<-chan *DeviceEvent, error) {
 	if err := d.ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -167,9 +167,9 @@ func (d *devicePubSub) SubscribeEvents() (<-chan *types.DeviceEvent, error) {
 	if d.events != nil {
 		return d.events, nil
 	}
-	d.events = make(chan *types.DeviceEvent, mqttBufferSize)
+	d.events = make(chan *DeviceEvent, mqttBufferSize)
 	token := d.client.SubscribeDeviceEvents(d.appID, d.devID, "#", func(_ mqtt.Client, appID string, devID string, eventType types.EventType, payload []byte) {
-		msg := types.DeviceEvent{
+		msg := DeviceEvent{
 			AppID: appID,
 			DevID: devID,
 			Event: eventType,
@@ -212,7 +212,7 @@ func (d *devicePubSub) UnsubscribeEvents() error {
 	return token.Error()
 }
 
-func (d *devicePubSub) SubscribeActivations() (<-chan *types.Activation, error) {
+func (d *devicePubSub) SubscribeActivations() (<-chan *Activation, error) {
 	if err := d.ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -221,7 +221,7 @@ func (d *devicePubSub) SubscribeActivations() (<-chan *types.Activation, error) 
 	if d.activations != nil {
 		return d.activations, nil
 	}
-	d.activations = make(chan *types.Activation, mqttBufferSize)
+	d.activations = make(chan *Activation, mqttBufferSize)
 	token := d.client.SubscribeDeviceActivations(d.appID, d.devID, func(_ mqtt.Client, appID string, devID string, mqg types.Activation) {
 		mqg.AppID = appID
 		mqg.DevID = devID
@@ -231,7 +231,7 @@ func (d *devicePubSub) SubscribeActivations() (<-chan *types.Activation, error) 
 			return
 		}
 		select {
-		case d.activations <- &mqg:
+		case d.activations <- (*Activation)(&mqg):
 		default:
 		}
 	})
@@ -263,7 +263,7 @@ func (d *devicePubSub) Close() {
 
 // ApplicationPubSub interface for publishing and subscribing to devices in an application
 type ApplicationPubSub interface {
-	Publish(devID string, downlink *types.DownlinkMessage) error
+	Publish(devID string, downlink *DownlinkMessage) error
 	Device(devID string) DevicePubSub
 	AllDevices() DeviceSub
 	Close()
@@ -299,7 +299,7 @@ func (a *applicationPubSub) AllDevices() DeviceSub {
 	return a.Device("+")
 }
 
-func (a *applicationPubSub) Publish(devID string, downlink *types.DownlinkMessage) error {
+func (a *applicationPubSub) Publish(devID string, downlink *DownlinkMessage) error {
 	d := &devicePubSub{
 		logger: a.logger,
 		client: a.client,

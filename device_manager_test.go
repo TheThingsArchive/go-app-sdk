@@ -49,8 +49,8 @@ func TestDeviceManager(t *testing.T) {
 			&handler.Device{
 				DevID: "dev-id",
 				Device: &handler.Device_LoRaWANDevice{LoRaWANDevice: &lorawan.Device{
-					AppEUI: types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
 					DevEUI: types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
+					AppEUI: types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
 				}},
 			},
 		}}
@@ -101,8 +101,8 @@ func TestDeviceManager(t *testing.T) {
 		err = manager.Set(&Device{
 			SparseDevice: SparseDevice{
 				DevID:  "dev-id",
-				AppEUI: types.AppEUI{1, 2, 3, 4, 5, 6, 7, 8},
-				DevEUI: types.DevEUI{1, 2, 3, 4, 5, 6, 7, 8},
+				AppEUI: AppEUI([8]byte{1, 2, 3, 4, 5, 6, 7, 8}),
+				DevEUI: DevEUI([8]byte{1, 2, 3, 4, 5, 6, 7, 8}),
 			},
 			FCntDown: 42,
 		})
@@ -134,7 +134,7 @@ func TestDeviceManager(t *testing.T) {
 		a.So(dev.IsNew(), ShouldBeTrue)
 		// Can't call these funcs on a new device
 		a.So(func() { dev.Update() }, ShouldPanic)
-		a.So(func() { dev.Personalize(types.NwkSKey{}, types.AppSKey{}) }, ShouldPanic)
+		a.So(func() { dev.Personalize(NwkSKey{}, AppSKey{}) }, ShouldPanic)
 		a.So(func() { dev.Delete() }, ShouldPanic)
 	}
 
@@ -171,13 +171,13 @@ func TestDeviceManager(t *testing.T) {
 		mock.reset()
 		devMock.reset()
 		devMock.err = someErr
-		err = device.Personalize(types.NwkSKey{}, types.AppSKey{})
+		err = device.Personalize(NwkSKey{}, AppSKey{})
 		a.So(err, ShouldNotBeNil)
 
 		mock.reset()
 		devMock.reset()
 		devMock.devAddrResponse = &lorawan.DevAddrResponse{DevAddr: types.DevAddr{1, 2, 3, 4}}
-		err = device.Personalize(types.NwkSKey{}, types.AppSKey{})
+		err = device.Personalize(NwkSKey{}, AppSKey{})
 		a.So(err, ShouldBeNil)
 		a.So(mock.device.GetLoRaWANDevice().DevAddr, ShouldResemble, &types.DevAddr{1, 2, 3, 4})
 
