@@ -6,16 +6,16 @@ services:
   - docker
 
 go:
-  - 1.9
+  - 1.9.7
 
 before_install:
-  - go get github.com/kardianos/govendor
-  - go get github.com/mattn/goveralls
+  - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
 install:
-  - govendor sync -v
+  - dep ensure
 
 before_script:
+  - echo $TRAVIS_GO_VERSION
   - docker run -d -p 127.0.0.1:1883:1883 thethingsnetwork/rabbitmq
 
 script:
