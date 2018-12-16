@@ -6,14 +6,14 @@ services:
   - docker
 
 go:
-  - 1.8
+  - "1.11.x"
 
 before_install:
   - go get github.com/kardianos/govendor
   - go get github.com/mattn/goveralls
 
 install:
-  - govendor sync -v
+  - env GO111MODULE=on go mod download
 
 before_script:
   - docker run -d -p 127.0.0.1:1883:1883 thethingsnetwork/rabbitmq
