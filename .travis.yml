@@ -15,13 +15,14 @@ before_install:
   - go get github.com/mattn/goveralls
 
 install:
-  - go mod download
+  # - go mod download
 
 before_script:
   - docker run -d -p 127.0.0.1:1883:1883 thethingsnetwork/rabbitmq
 
 script:
-  - go test -v -cover .
+  - go build
+  - go test -v -cover 
 
 after_script:
   - goveralls -service=travis-ci
