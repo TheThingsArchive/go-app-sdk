@@ -15,7 +15,7 @@ before_install:
   - go get github.com/mattn/goveralls
 
 install:
-  # - go mod download
+  - go mod vendor
 
 before_script:
   - docker run -d -p 127.0.0.1:1883:1883 thethingsnetwork/rabbitmq
