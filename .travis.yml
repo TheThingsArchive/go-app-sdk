@@ -12,11 +12,9 @@ env:
   - GO111MODULE=on
 
 before_install:
-  - go get github.com/kardianos/govendor
   - go get github.com/mattn/goveralls
 
 install:
-  - go mod verify
   - go mod download
 
 before_script:
