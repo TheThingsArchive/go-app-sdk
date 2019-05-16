@@ -6,16 +6,11 @@
 
 ## Usage
 
-To avoid issues with incompatible dependencies, we recommend using [vgo](https://github.com/golang/go/wiki/vgo).
-
 Assuming you're working on a project `github.com/your-username/your-project`:
 
 ```
-go get -u golang.org/x/vgo
-cd $GOPATH/src/github.com/your-username/your-project
-vgo mod -init -module github.com/your-username/your-project
-vgo get github.com/TheThingsNetwork/go-app-sdk
-vgo mod -vendor
+go mod -init -module github.com/your-username/your-project
+go get github.com/TheThingsNetwork/go-app-sdk
 ```
 
 See the examples [on GoDoc](https://godoc.org/github.com/TheThingsNetwork/go-app-sdk#example-package).
