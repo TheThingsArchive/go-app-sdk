@@ -6,14 +6,21 @@ services:
   - docker
 
 go:
-  - 1.8
+- '1.11.x'
+- '1.12.x'
+
+go_import_path: github.com/TheThingsNetwork/go-app-sdk
+
+env:
+  global:
+  - GOPROXY=https://proxy.golang.org
+  - GO111MODULE=on
 
 before_install:
-  - go get github.com/kardianos/govendor
   - go get github.com/mattn/goveralls
 
 install:
-  - govendor sync -v
+  - go mod download
 
 before_script:
   - docker run -d -p 127.0.0.1:1883:1883 thethingsnetwork/rabbitmq
