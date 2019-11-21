@@ -9,7 +9,8 @@
 Assuming you're working on a project `github.com/your-username/your-project`:
 
 ```
-go mod -init -module github.com/your-username/your-project
+cd your-project
+go mod init github.com/your-username/your-project
 go get github.com/TheThingsNetwork/go-app-sdk
 ```
 
